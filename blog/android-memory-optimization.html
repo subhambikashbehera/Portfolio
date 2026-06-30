@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Android Memory Optimization at Scale — Subham Bikash Behera</title>
+<meta name="description" content="Practical techniques for finding and fixing memory leaks, reducing app memory footprint, and optimizing for low-end Android devices in production apps.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E13; --panel:#151A23; --panel-border:#232A36;
+    --text:#ECEEF2; --text-muted:#8C94A3; --text-dim:#5B6271; --accent:#4ADE80; --gold:#F0B429;
+    --font-display:'Space Grotesk',sans-serif; --font-mono:'JetBrains Mono',monospace; --font-body:'Inter',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg); color:var(--text); font-family:var(--font-body); line-height:1.7;}
+  a{color:var(--accent);}
+  .wrap{max-width:700px; margin:0 auto; padding:60px 28px 100px;}
+  .back{font-family:var(--font-mono); font-size:12.5px; color:var(--accent); display:inline-block; margin-bottom:36px;}
+  .meta{font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-bottom:14px;}
+  h1{font-family:var(--font-display); font-size:clamp(28px,5vw,40px); font-weight:700; line-height:1.15; margin-bottom:28px;}
+  h2{font-family:var(--font-display); font-size:22px; font-weight:600; margin:40px 0 14px;}
+  p{color:var(--text-muted); margin-bottom:16px; font-size:15.5px;}
+  ul{color:var(--text-muted); margin:0 0 16px 20px; font-size:15.5px;}
+  li{margin-bottom:8px;}
+  code{font-family:var(--font-mono); font-size:13.5px; background:var(--panel); border:1px solid var(--panel-border); padding:2px 6px; border-radius:4px; color:var(--gold);}
+  pre{background:var(--panel); border:1px solid var(--panel-border); border-radius:8px; padding:18px 20px; overflow-x:auto; margin-bottom:20px;}
+  pre code{background:none; border:none; padding:0; color:var(--text); font-size:13px; line-height:1.6;}
+  hr{border:none; border-top:1px solid var(--panel-border); margin:48px 0 28px;}
+  .author{font-family:var(--font-mono); font-size:12.5px; color:var(--text-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← All articles</a>
+  <div class="meta">30 JUN 2026 · 7 MIN READ</div>
+  <h1>Android Memory Optimization at Scale</h1>
+
+  <p>Memory problems rarely show up as crashes in your testing — they show up as slow degradation, background kills, and one-star reviews mentioning "app gets laggy after a while." In high-traffic fintech apps handling real-time data, getting this wrong is expensive. Here's what's actually worked in production.</p>
+
+  <h2>Start with the right tools, not guesses</h2>
+  <p>Before optimizing anything, profile. Android Studio's Memory Profiler shows live heap allocation, and the Layout Inspector catches view hierarchy bloat. For leak detection specifically, <code>LeakCanary</code> is worth keeping in debug builds permanently — it catches Activity and Fragment leaks automatically and gives you a reference chain, which saves hours of manual heap dump analysis.</p>
+  <pre><code>debugImplementation("com.squareup.leakcanary:leakcanary-android:2.x")</code></pre>
+
+  <h2>The usual leak suspects</h2>
+  <p>Most leaks in production Android code trace back to a small set of patterns:</p>
+  <ul>
+    <li>Static references to <code>Activity</code> or <code>Context</code> — common in singletons or companion objects that outlive the screen.</li>
+    <li>Anonymous inner classes (listeners, callbacks) holding an implicit reference to the outer Activity.</li>
+    <li>Unregistered listeners and observers — BroadcastReceivers, LiveData observers, or location listeners that never get torn down.</li>
+    <li>Coroutines launched on the wrong scope, keeping references alive past the screen's lifecycle.</li>
+  </ul>
+  <p>In Compose specifically, forgetting an <code>onDispose</code> block inside <code>DisposableEffect</code> is the most common way I've seen listeners leak.</p>
+
+  <h2>Use application context where the lifecycle doesn't matter</h2>
+  <p>If a class needs a <code>Context</code> just to access resources, system services, or shared preferences — not anything UI-related — pass the application context instead of an Activity context. It can't leak an Activity because it isn't tied to one.</p>
+  <pre><code>class AnalyticsLogger(private val appContext: Context) {
+    // appContext = context.applicationContext, not the Activity
+}</code></pre>
+
+  <h2>Bitmap and image handling</h2>
+  <p>Images are usually the single biggest memory consumer in any app with a feed, gallery, or chart-heavy UI. A few rules that consistently help:</p>
+  <ul>
+    <li>Let an image-loading library (Coil, Glide) manage caching and downsampling — don't decode bitmaps manually unless you have a specific reason to.</li>
+    <li>Decode images at the target view size, not full resolution, using <code>inSampleSize</code> if you're handling decoding yourself.</li>
+    <li>Recycle large bitmaps explicitly in pre-Android-8 code paths where the garbage collector isn't as aggressive about reclaiming native memory.</li>
+  </ul>
+
+  <h2>Background work and WorkManager</h2>
+  <p>Long-running background work is a common silent leak source — a job holding a reference to a ViewModel or Activity well after the screen is gone. Tie coroutine scopes to <code>viewModelScope</code> or <code>lifecycleScope</code> rather than a custom scope you have to remember to cancel manually, and for true background work (sync, uploads), use WorkManager so the OS manages the lifecycle instead of your app holding a wakelock or thread alive indefinitely.</p>
+
+  <h2>Watch your data structures, not just your views</h2>
+  <p>In real-time apps — order books, live feeds, chat — unbounded in-memory caches are an easy way to slowly grow your heap over a session. A few practices that helped on a trading app with constant WebSocket updates:</p>
+  <ul>
+    <li>Cap in-memory lists with a fixed window size instead of appending indefinitely.</li>
+    <li>Use <code>LruCache</code> for anything that's a cache by definition rather than a plain HashMap.</li>
+    <li>Periodically clear stale entries tied to screens the user has already left.</li>
+  </ul>
+
+  <h2>Test on low-end devices, not just your flagship</h2>
+  <p>A flow that performs fine on a high-RAM device can trigger frequent background process kills on a budget device with 2-3GB RAM. If your user base spans price points, profile on the cheapest device in your target range, not just your dev phone — Android's low-memory killer behaves very differently under real memory pressure than it does in a profiler running on a powerful test device.</p>
+
+  <h2>Quick checklist</h2>
+  <ul>
+    <li>Run LeakCanary in every debug build, not just when chasing a specific bug.</li>
+    <li>Audit static references and anonymous inner classes for implicit Activity references.</li>
+    <li>Use application context for anything not UI-bound.</li>
+    <li>Let an image library handle bitmap memory — don't hand-roll it.</li>
+    <li>Scope coroutines to lifecycle-aware scopes, always.</li>
+    <li>Cap unbounded collections that grow with real-time data.</li>
+    <li>Profile on low-RAM devices before shipping.</li>
+  </ul>
+
+  <hr>
+  <div class="author">Written by Subham Bikash Behera — Senior Android Developer</div>
+</div>
+</body>
+</html>
