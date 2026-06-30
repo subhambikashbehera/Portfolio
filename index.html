@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subham Bikash Behera — Senior Android Developer & Full Stack (Spring Boot)</title>
+<meta name="description" content="Senior Android Developer & Full Stack Engineer — Kotlin, Jetpack Compose, MVVM, Spring Boot. FinTech, Crypto & Healthcare applications.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0E13;
+    --bg-soft: #10141B;
+    --panel: #151A23;
+    --panel-border: #232A36;
+    --text: #ECEEF2;
+    --text-muted: #8C94A3;
+    --text-dim: #5B6271;
+    --accent: #4ADE80;
+    --accent-dim: #2E8B57;
+    --gold: #F0B429;
+    --red: #F2545B;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  ::selection{ background:var(--accent); color:#0B0E13; }
+
+  a{color:inherit; text-decoration:none;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+
+  .wrap{ max-width:980px; margin:0 auto; padding:0 28px; }
+
+  /* ---------- background grid texture ---------- */
+  .bg-grid{
+    position:fixed; inset:0; z-index:-1;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 80%);
+  }
+
+  /* ---------- nav ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter: blur(10px);
+    background:rgba(11,14,19,0.78);
+    border-bottom:1px solid var(--panel-border);
+  }
+  .nav-inner{
+    max-width:980px; margin:0 auto; padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-mark{
+    font-family:var(--font-mono); font-size:13px; color:var(--accent);
+    display:flex; align-items:center; gap:8px;
+  }
+  .nav-mark .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+  .nav-links{ display:flex; gap:26px; font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted); }
+  .nav-links a{ transition:color .15s; }
+  .nav-links a:hover{ color:var(--accent); }
+  .nav-links .num{ color:var(--text-dim); margin-right:4px; }
+  @media (max-width:640px){ .nav-links{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:88px 0 64px; position:relative; }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:13px; color:var(--accent);
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .eyebrow .blink{
+    width:8px; height:14px; background:var(--accent);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  h1.name{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(38px,6vw,64px); line-height:1.04; letter-spacing:-0.02em;
+    margin-bottom:18px;
+  }
+  h1.name .surname{ color:var(--text-muted); font-weight:500; }
+
+  .role-line{
+    font-family:var(--font-mono); font-size:clamp(14px,2vw,16.5px);
+    color:var(--text-muted); max-width:680px; margin-bottom:28px;
+    line-height:1.7;
+  }
+  .role-line .pipe{ color:var(--text-dim); margin:0 8px; }
+  .role-line .hl{ color:var(--text); }
+
+  .meta-row{ display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin-bottom:36px; }
+  .meta-item{
+    font-family:var(--font-mono); font-size:13px; color:var(--text-muted);
+    display:flex; align-items:center; gap:7px;
+  }
+  .meta-item svg{ width:14px; height:14px; stroke:var(--text-dim); flex-shrink:0; }
+
+  .cta-row{ display:flex; flex-wrap:wrap; gap:14px; }
+  .btn{
+    font-family:var(--font-mono); font-size:13px; padding:11px 20px;
+    border-radius:6px; display:inline-flex; align-items:center; gap:8px;
+    transition: transform .15s, border-color .15s, background .15s;
+    border:1px solid var(--panel-border);
+  }
+  .btn-primary{ background:var(--accent); color:#0B0E13; font-weight:600; border-color:var(--accent); }
+  .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 6px 22px -8px rgba(74,222,128,0.55); }
+  .btn-ghost{ color:var(--text); background:var(--panel); }
+  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* ---------- terminal panel (signature element) ---------- */
+  .terminal{
+    margin-top:56px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:10px;
+    overflow:hidden; box-shadow:0 30px 60px -30px rgba(0,0,0,0.6);
+  }
+  .term-bar{
+    display:flex; align-items:center; gap:8px; padding:11px 16px;
+    border-bottom:1px solid var(--panel-border); background:var(--bg-soft);
+  }
+  .term-dot{ width:10px; height:10px; border-radius:50%; }
+  .term-dot.r{ background:#F2545B33; border:1px solid #F2545B66; }
+  .term-dot.y{ background:#F0B42933; border:1px solid #F0B42966; }
+  .term-dot.g{ background:#4ADE8033; border:1px solid #4ADE8066; }
+  .term-title{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-left:6px; }
+  .term-body{ padding:20px 22px; font-family:var(--font-mono); font-size:13px; line-height:1.85; }
+  .term-body .ln-num{ color:var(--text-dim); margin-right:14px; user-select:none; }
+  .term-body .key{ color:var(--accent); }
+  .term-body .str{ color:var(--gold); }
+  .term-body .muted{ color:var(--text-muted); }
+  .term-body .comment{ color:var(--text-dim); }
+
+  /* ---------- section shell ---------- */
+  section{ padding:70px 0; border-top:1px solid var(--panel-border); }
+  .sec-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:38px; }
+  .sec-num{ font-family:var(--font-mono); font-size:13px; color:var(--accent); }
+  .sec-title{ font-family:var(--font-display); font-size:clamp(22px,3vw,28px); font-weight:600; letter-spacing:-0.01em; }
+  .sec-rule{ flex:1; height:1px; background:var(--panel-border); }
+
+  /* ---------- summary ---------- */
+  .summary-text{ max-width:680px; font-size:16px; color:var(--text-muted); }
+  .summary-text strong{ color:var(--text); font-weight:600; }
+  .stat-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:36px; }
+  .stat{
+    flex:1; min-width:150px; background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:8px; padding:18px 20px;
+  }
+  .stat-val{ font-family:var(--font-display); font-size:26px; font-weight:700; color:var(--accent); }
+  .stat-label{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-top:4px; }
+
+  /* ---------- skills ---------- */
+  .skill-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  @media (max-width:900px){ .skill-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:600px){ .skill-grid{ grid-template-columns:1fr; } }
+  .skill-card{ background:var(--panel); border:1px solid var(--panel-border); border-radius:8px; padding:20px 22px; }
+  .skill-card h3{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim);
+    text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px;
+  }
+  .tag-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    font-family:var(--font-mono); font-size:12px; padding:5px 10px;
+    background:var(--bg-soft); border:1px solid var(--panel-border); border-radius:5px; color:var(--text-muted);
+    transition:border-color .15s, color .15s;
+  }
+  .tag:hover{ border-color:var(--accent-dim); color:var(--text); }
+
+  /* ---------- experience (build log) ---------- */
+  .job{ position:relative; padding:0 0 40px 28px; border-left:1px solid var(--panel-border); }
+  .job:last-child{ padding-bottom:0; }
+  .job::before{
+    content:''; position:absolute; left:-5px; top:4px; width:9px; height:9px;
+    border-radius:50%; background:var(--bg); border:2px solid var(--accent);
+  }
+  .job-status{ font-family:var(--font-mono); font-size:11px; color:var(--accent); margin-bottom:6px; }
+  .job-head{ display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; margin-bottom:4px; }
+  .job-role{ font-family:var(--font-display); font-size:18px; font-weight:600; }
+  .job-org{ color:var(--text-muted); font-size:14.5px; }
+  .job-date{ font-family:var(--font-mono); font-size:12px; color:var(--text-dim); margin-bottom:14px; }
+  .job-points{ list-style:none; }
+  .job-points li{
+    position:relative; padding-left:18px; margin-bottom:9px; font-size:14.5px; color:var(--text-muted);
+  }
+  .job-points li::before{ content:'›'; position:absolute; left:0; color:var(--accent-dim); font-family:var(--font-mono); }
+
+  /* ---------- projects ---------- */
+  .project-card{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:10px;
+    padding:28px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:30px; align-items:center;
+  }
+  @media (max-width:760px){ .project-card{ grid-template-columns:1fr; } }
+  .project-title-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .project-title{ font-family:var(--font-display); font-size:21px; font-weight:600; }
+  .project-badge{
+    font-family:var(--font-mono); font-size:10.5px; color:var(--gold); border:1px solid #F0B42955;
+    padding:3px 8px; border-radius:4px; background:#F0B42912;
+  }
+  .project-desc{ color:var(--text-muted); font-size:14.5px; margin-bottom:18px; }
+  .project-points li{ font-size:13.5px; color:var(--text-muted); padding-left:18px; position:relative; margin-bottom:8px; }
+  .project-points li::before{ content:'+'; position:absolute; left:0; color:var(--accent); font-family:var(--font-mono); }
+  .project-link{ display:inline-flex; align-items:center; gap:6px; margin-top:18px; font-family:var(--font-mono); font-size:12.5px; color:var(--accent); }
+  .project-link:hover{ text-decoration:underline; }
+
+  /* candlestick chart signature */
+  .chart-box{ background:var(--bg-soft); border:1px solid var(--panel-border); border-radius:8px; padding:14px; }
+  .chart-box svg{ display:block; width:100%; height:auto; }
+  .chart-meta{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-top:10px; }
+  .chart-meta .up{ color:var(--accent); }
+
+  /* ---------- education ---------- */
+  .edu-row{
+    display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:8px; padding:22px 24px;
+  }
+  .edu-deg{ font-family:var(--font-display); font-size:16.5px; font-weight:600; }
+  .edu-school{ color:var(--text-muted); font-size:14px; margin-top:3px; }
+  .edu-grade{ font-family:var(--font-mono); font-size:13px; color:var(--accent); align-self:center; }
+
+  /* ---------- footer / contact ---------- */
+  footer{ padding:70px 0 50px; border-top:1px solid var(--panel-border); text-align:center; }
+  .foot-title{ font-family:var(--font-display); font-size:clamp(26px,4vw,38px); font-weight:600; margin-bottom:16px; }
+  .foot-sub{ color:var(--text-muted); font-size:15px; max-width:480px; margin:0 auto 32px; }
+  .foot-links{ display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-bottom:46px; }
+  .foot-bottom{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); }
+
+  .reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-mark"><span class="dot"></span> subham.dev</div>
+    <nav class="nav-links">
+      <a href="#summary"><span class="num">01</span>Summary</a>
+      <a href="#skills"><span class="num">02</span>Stack</a>
+      <a href="#experience"><span class="num">03</span>Experience</a>
+      <a href="#projects"><span class="num">04</span>Projects</a>
+      <a href="blog/"><span class="num">05</span>Blog</a>
+      <a href="#contact"><span class="num">06</span>Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" style="border-top:none; padding-top:88px;">
+    <div class="eyebrow"><span class="blink"></span> status: immediate joiner · full-stack (android + backend)</div>
+    <h1 class="name">Subham Bikash <span class="surname">Behera</span></h1>
+    <p class="role-line">
+      <span class="hl">Senior Android Developer</span><span class="pipe">/</span>Kotlin · Jetpack Compose · MVVM · Coroutines
+      <span class="pipe">/</span><span class="hl">Spring Boot &amp; Full Stack</span>
+      <span class="pipe">/</span>FinTech, Crypto &amp; Healthcare systems
+    </p>
+
+    <div class="meta-row">
+      <span class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>
+        Bengaluru, Karnataka, India
+      </span>
+      <span class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        subhambikashbehera@gmail.com
+      </span>
+      <span class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.26a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92Z"/></svg>
+        +91-7749867465
+      </span>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:subhambikashbehera@gmail.com">Email me →</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/subham-bikash-behera-check-profile/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn-ghost" href="#" download>Download résumé</a>
+    </div>
+
+    <div class="terminal reveal">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">~/builds/career.log</span>
+      </div>
+      <div class="term-body">
+        <div><span class="ln-num">01</span><span class="key">build</span> <span class="muted">--module</span> <span class="str">mcb-payments</span> <span class="comment">// scan-to-pay, bill pay, scheduled payments</span></div>
+        <div><span class="ln-num">02</span><span class="key">build</span> <span class="muted">--module</span> <span class="str">pi42-trading-engine</span> <span class="comment">// 100K+ downloads, $6B+ volume</span></div>
+        <div><span class="ln-num">03</span><span class="key">build</span> <span class="muted">--module</span> <span class="str">globus-warehouse-mobility</span> <span class="comment">// Zebra BLE/Wi-Fi, multi-modular</span></div>
+        <div><span class="ln-num">04</span><span class="key">build</span> <span class="muted">--module</span> <span class="str">spring-boot-services</span> <span class="comment">// REST APIs, backend systems</span></div>
+        <div><span class="ln-num">05</span><span class="key">test</span> <span class="muted">--coverage</span> <span class="str">unit, integration, security</span> <span style="color:var(--accent)">✓ passed</span></div>
+        <div><span class="ln-num">06</span><span class="key">deploy</span> <span class="muted">--target</span> <span class="str">production</span> <span style="color:var(--accent)">✓ stable, no rollback</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary">
+    <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">Summary</span><span class="sec-rule"></span></div>
+    <p class="summary-text">
+      Senior Android Developer with <strong>4+ years</strong> of experience building scalable, secure Android applications, now extending
+      into <strong>full-stack development with Java &amp; Spring Boot</strong>. Developed and deployed <strong>Pi42</strong>, India's first Crypto-INR
+      perpetual futures app, reaching <strong>100K+ Play Store downloads</strong> and <strong>$6B+ in transaction volume</strong>. Contributed core
+      banking features for <strong>Mauritius Commercial Bank</strong>, serving millions of daily users, and built warehouse mobility solutions
+      for <strong>Globus Medical</strong> on Zebra handheld devices. Strong expertise in real-time systems, secure financial applications,
+      REST API design, and performance optimization across the stack.
+    </p>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-val">4+</div><div class="stat-label">YEARS EXPERIENCE</div></div>
+      <div class="stat"><div class="stat-val">100K+</div><div class="stat-label">PI42 DOWNLOADS</div></div>
+      <div class="stat"><div class="stat-val">$6B+</div><div class="stat-label">TRANSACTION VOLUME</div></div>
+      <div class="stat"><div class="stat-val">$24K</div><div class="stat-label">ANNUAL COST SAVED</div></div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">Stack</span><span class="sec-rule"></span></div>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <h3>Languages</h3>
+        <div class="tag-list">
+          <span class="tag">Kotlin</span><span class="tag">Java</span><span class="tag">Python</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>Frameworks &amp; Libraries</h3>
+        <div class="tag-list">
+          <span class="tag">Jetpack Compose</span><span class="tag">Coroutines</span><span class="tag">Kotlin Flow</span>
+          <span class="tag">Hilt</span><span class="tag">Retrofit</span><span class="tag">WorkManager</span>
+          <span class="tag">Room / SQLite</span><span class="tag">AIDL</span><span class="tag">WebSocket</span>
+          <span class="tag">Socket.IO</span><span class="tag">BLE / Wi-Fi</span><span class="tag">FCM</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>Backend &amp; Full Stack</h3>
+        <div class="tag-list">
+          <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">REST API Design</span>
+          <span class="tag">Microservices</span><span class="tag">SQL / Relational DB</span><span class="tag">JWT Auth</span>
+          <span class="tag">API Security</span><span class="tag">System Design</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>Architecture &amp; Concepts</h3>
+        <div class="tag-list">
+          <span class="tag">Clean Architecture</span><span class="tag">MVVM</span><span class="tag">MVC</span>
+          <span class="tag">MVP</span><span class="tag">SOLID</span><span class="tag">Multi-module</span>
+          <span class="tag">REST API</span><span class="tag">IoT</span><span class="tag">Agile / Scrum</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>Tools &amp; Expertise</h3>
+        <div class="tag-list">
+          <span class="tag">Jira</span><span class="tag">Bitbucket</span><span class="tag">GitHub</span>
+          <span class="tag">GitLab</span><span class="tag">Azure</span><span class="tag">ADB</span>
+          <span class="tag">ProGuard</span><span class="tag">JUnit / Mockito</span><span class="tag">Performance Tuning</span>
+          <span class="tag">Security</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">Experience</span><span class="sec-rule"></span></div>
+
+    <div class="job reveal">
+      <div class="job-status">● production</div>
+      <div class="job-head">
+        <span class="job-role">Senior Android Developer — Mauritius Commercial Bank</span>
+      </div>
+      <div class="job-org">Techolution Pvt. Ltd. · Hyderabad (Hybrid, Mauritius)</div>
+      <div class="job-date">09/2023 — 12/2025</div>
+      <ul class="job-points">
+        <li>Developed and optimized high-scale fintech payment modules serving millions of active users with secure, reliable transaction processing.</li>
+        <li>Built core banking features: QR-based Scan to Pay, bill payments, prepaid card systems, scheduled payments, and PayPal international integration.</li>
+        <li>Implemented SSL certificate pinning and secure API communication to harden mobile transaction security.</li>
+        <li>Collaborated with cross-functional onsite teams in agile sprints to ship stable, production-ready banking features.</li>
+      </ul>
+    </div>
+
+    <div class="job reveal">
+      <div class="job-status">● production</div>
+      <div class="job-head">
+        <span class="job-role">Senior Android Developer — Globus Medical</span>
+      </div>
+      <div class="job-org">Techolution Pvt. Ltd. · Remote (USA)</div>
+      <div class="job-date">09/2023 — 12/2025</div>
+      <ul class="job-points">
+        <li>Built enterprise-grade warehouse mobility solutions for Zebra handheld devices with barcode-driven, real-time scanning workflows.</li>
+        <li>Engineered a scalable multi-modular Android system with reusable BLE and Wi-Fi integration layers for IoT extensibility.</li>
+        <li>Replaced costly third-party enterprise plugins with in-house solutions, cutting annual operational costs by ~$24,000.</li>
+        <li>Published reusable modular Android libraries on JitPack following Clean Architecture and versioning best practices.</li>
+      </ul>
+    </div>
+
+    <div class="job reveal">
+      <div class="job-status">● shipped</div>
+      <div class="job-head">
+        <span class="job-role">Software Development Engineer – 1</span>
+      </div>
+      <div class="job-org">DigiBoxx India Pvt. Ltd. · Kolkata</div>
+      <div class="job-date">01/2023 — 09/2023</div>
+      <ul class="job-points">
+        <li>Built a high-performance Auto-Sync engine handling 20,000+ media files with near real-time, background synchronization.</li>
+        <li>Designed a scalable upload architecture using WorkManager for reliable transfers, retries, and network failure handling.</li>
+        <li>Mentored and coordinated a team of 3 Android engineers across feature delivery cycles.</li>
+      </ul>
+    </div>
+
+    <div class="job reveal">
+      <div class="job-status">● shipped</div>
+      <div class="job-head">
+        <span class="job-role">Software Development Engineer – 1</span>
+      </div>
+      <div class="job-org">iServeU Pvt Ltd. · Bhubaneswar</div>
+      <div class="job-date">07/2022 — 01/2023</div>
+      <ul class="job-points">
+        <li>Migrated Morphone, D180, and Wiseasy P3 codebases to Kotlin with MVVM Clean Architecture.</li>
+        <li>Developed an IRIS Scanner app for biometric fintech transactions with the Wiseasy China team.</li>
+        <li>Implemented JWT-based encryption for secure financial transaction processing across POS devices.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">Featured Project</span><span class="sec-rule"></span></div>
+
+    <div class="project-card reveal">
+      <div>
+        <div class="project-title-row">
+          <span class="project-title">Pi42</span>
+          <span class="project-badge">India's 1st Crypto-INR Perpetual Futures</span>
+        </div>
+        <p class="project-desc">A cryptocurrency trading platform built from scratch following MVVM Clean Architecture and SOLID principles. Freelance, Jan – Mar 2026.</p>
+        <ul class="project-points">
+          <li>WebSocket connection pooling with auto-reconnection for real-time order book &amp; trade data.</li>
+          <li>Multi-layer caching (Room DB + in-memory) cutting server load by 60%.</li>
+          <li>Custom Canvas-based candlestick, line &amp; area chart rendering.</li>
+          <li>Market / Limit / Stop-Loss orders, 2x–150x leverage, live P&amp;L calculation.</li>
+          <li>Biometric auth, 2FA, certificate pinning, AES-256 encryption.</li>
+        </ul>
+        <a class="project-link" href="#" target="_blank" rel="noopener">View on Play Store →</a>
+      </div>
+
+      <div class="chart-box">
+        <svg viewBox="0 0 320 180" aria-label="Stylized candlestick chart representing Pi42 trading volume">
+          <line x1="0" y1="30" x2="320" y2="30" stroke="#232A36" stroke-width="1"/>
+          <line x1="0" y1="80" x2="320" y2="80" stroke="#232A36" stroke-width="1"/>
+          <line x1="0" y1="130" x2="320" y2="130" stroke="#232A36" stroke-width="1"/>
+          <g stroke-width="1.4">
+            <line x1="16" y1="60" x2="16" y2="100" stroke="#F2545B"/><rect x="11" y="70" width="10" height="22" fill="#F2545B"/>
+            <line x1="36" y1="50" x2="36" y2="95" stroke="#4ADE80"/><rect x="31" y="58" width="10" height="24" fill="#4ADE80"/>
+            <line x1="56" y1="70" x2="56" y2="110" stroke="#F2545B"/><rect x="51" y="78" width="10" height="20" fill="#F2545B"/>
+            <line x1="76" y1="40" x2="76" y2="85" stroke="#4ADE80"/><rect x="71" y="48" width="10" height="26" fill="#4ADE80"/>
+            <line x1="96" y1="55" x2="96" y2="100" stroke="#4ADE80"/><rect x="91" y="62" width="10" height="28" fill="#4ADE80"/>
+            <line x1="116" y1="75" x2="116" y2="115" stroke="#F2545B"/><rect x="111" y="82" width="10" height="22" fill="#F2545B"/>
+            <line x1="136" y1="50" x2="136" y2="90" stroke="#4ADE80"/><rect x="131" y="58" width="10" height="22" fill="#4ADE80"/>
+            <line x1="156" y1="30" x2="156" y2="75" stroke="#4ADE80"/><rect x="151" y="38" width="10" height="26" fill="#4ADE80"/>
+            <line x1="176" y1="55" x2="176" y2="95" stroke="#F2545B"/><rect x="171" y="62" width="10" height="22" fill="#F2545B"/>
+            <line x1="196" y1="35" x2="196" y2="80" stroke="#4ADE80"/><rect x="191" y="44" width="10" height="24" fill="#4ADE80"/>
+            <line x1="216" y1="50" x2="216" y2="100" stroke="#F2545B"/><rect x="211" y="58" width="10" height="28" fill="#F2545B"/>
+            <line x1="236" y1="25" x2="236" y2="65" stroke="#4ADE80"/><rect x="231" y="32" width="10" height="22" fill="#4ADE80"/>
+            <line x1="256" y1="40" x2="256" y2="85" stroke="#4ADE80"/><rect x="251" y="48" width="10" height="24" fill="#4ADE80"/>
+            <line x1="276" y1="20" x2="276" y2="60" stroke="#4ADE80"/><rect x="271" y="26" width="10" height="22" fill="#4ADE80"/>
+            <line x1="296" y1="35" x2="296" y2="70" stroke="#F2545B"/><rect x="291" y="42" width="10" height="20" fill="#F2545B"/>
+          </g>
+        </svg>
+        <div class="chart-meta">
+          <span>BTC/INR-PERP</span>
+          <span class="up">▲ $6B+ volume</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  <section id="blog">
+    <div class="sec-head"><span class="sec-num">05</span><span class="sec-title">Writing</span><span class="sec-rule"></span></div>
+    <div class="skill-grid" style="grid-template-columns:repeat(3,1fr);">
+      <a class="skill-card" href="blog/jetpack-compose-side-effects.html" style="display:block; transition:border-color .15s;">
+        <h3 style="color:var(--text-dim);">14 JUN 2026</h3>
+        <div style="font-family:var(--font-display); font-size:16px; font-weight:600; margin-bottom:8px;">Jetpack Compose Side Effects, Explained</div>
+        <p style="color:var(--text-muted); font-size:13.5px;">LaunchedEffect, DisposableEffect, and rememberCoroutineScope — when to use which.</p>
+      </a>
+      <a class="skill-card" href="blog/index.html" style="display:block;">
+        <h3 style="color:var(--text-dim);">COMING SOON</h3>
+        <div style="font-family:var(--font-display); font-size:16px; font-weight:600; margin-bottom:8px;">Android Memory Management at Scale</div>
+        <p style="color:var(--text-muted); font-size:13.5px;">Lessons from optimizing high-traffic fintech apps.</p>
+      </a>
+      <a class="skill-card" href="blog/index.html" style="display:block;">
+        <h3 style="color:var(--text-dim);">COMING SOON</h3>
+        <div style="font-family:var(--font-display); font-size:16px; font-weight:600; margin-bottom:8px;">Mobile System Design Interviews</div>
+        <p style="color:var(--text-muted); font-size:13.5px;">A framework for approaching Android system design rounds.</p>
+      </a>
+    </div>
+    <a class="project-link" href="blog/" style="margin-top:24px; display:inline-flex;">View all articles →</a>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <div class="sec-head"><span class="sec-num">06</span><span class="sec-title">Education</span><span class="sec-rule"></span></div>
+    <div class="edu-row">
+      <div>
+        <div class="edu-deg">Bachelor of Engineering — Information Technology</div>
+        <div class="edu-school">GIET University, Gunupur, India</div>
+      </div>
+      <div class="edu-grade">CGPA 8.9 / 10</div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-title">Let's build something secure &amp; fast.</div>
+    <p class="foot-sub">Immediate joiner, open to Senior Android / Mobile roles in FinTech, Crypto and Healthcare.</p>
+    <div class="foot-links">
+      <a class="btn btn-primary" href="mailto:subhambikashbehera@gmail.com">subhambikashbehera@gmail.com</a>
+      <a class="btn btn-ghost" href="tel:+917749867465">+91-7749867465</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/subham-bikash-behera-check-profile/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="foot-bottom">© 2026 Subham Bikash Behera · Bengaluru, Karnataka, India</div>
+  </div>
+</footer>
+
+<script>
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.15});
+  items.forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
